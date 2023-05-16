@@ -23,7 +23,10 @@ public class GameManager {
     ArrayList<String> alive = new ArrayList<>();
     ArrayList<String> isGameMaster = new ArrayList<>();
     ArrayList<String> canSeeEveryone = new ArrayList<>();
-    ArrayList<String> HuntersThatCanRespawn = new ArrayList<>();
+
+
+
+    ArrayList<String> HuntersThatCantRespawn = new ArrayList<>();
     HashMap<String,String> votedFor = new HashMap<>();
     HashMap<String,ArrayList<String>> voteResults = new HashMap<>();
     HashMap<String,String> wwvotedFor = new HashMap<>();
@@ -41,7 +44,9 @@ public class GameManager {
     Werewolfs plugin;
     ConsoleCommandSender console;
 
-
+    public String wwVictim = "";
+    public String witchVictim = "";
+    public String hunterVictim = "";
 
 
 
@@ -130,9 +135,6 @@ public class GameManager {
             setDead(votedOut);
             executeCommand("say " + votedOut + " ist raus.",delay);
         }
-
-
-
     }
 
 
@@ -230,10 +232,11 @@ public class GameManager {
 
 
             if(!twice){
-
                 for(String s2 : Roles.keySet()){
                     if(Roles.get(s2).equalsIgnoreCase("Werwolf")){
                         executeCommand("give "+ s2+ " minecraft:wooden_sword{display:{Name:'{\"text\":\"KillerSchwert\"}'}}",20);
+                        Bukkit.getPlayer(s2).showPlayer(plugin, Bukkit.getPlayer(votedOut));
+                        wwVictim = votedOut;
                     }
                 }
             }
@@ -349,7 +352,7 @@ public class GameManager {
                 for (Player p2 : Bukkit.getOnlinePlayers()) {
                     if(Roles.get(p1.getDisplayName()).equals("Werwolf") && Roles.get(p2.getDisplayName()).equals("Werwolf"))
                     {
-                        break;
+                        continue;
                     }
                     p1.hidePlayer(plugin, p2);
                 }
@@ -381,12 +384,14 @@ public class GameManager {
                     if(Roles.get(s).equals("Hexe")){
 
                         executeCommand("give "+ s+ " minecraft:splash_potion{display:{Name:'{\"text\":\"Zaubertrank\"}'}}",0);
+
                     }
                     if(Roles.get(s).equals("Seher")){
                         executeCommand("give "+ s+ " minecraft:ender_eye{display:{Name:'{\"text\":\"Kristallkugel\"}'}}",0);
 
                     }
                     if(Roles.get(s).equals("Jäger")){
+                        //TODO give Crossbow only after death of hunter
                         executeCommand("give "+ s+ " minecraft:crossbow{display:{Name:'{\"text\":\"Gewehr\"}'}}",0);
 
                     }
@@ -434,6 +439,9 @@ public class GameManager {
 
 
         executeCommand("time set 6000",10);
+        wwVictim = "";
+        witchVictim = "";
+        hunterVictim = "";
         actualizeAliveList();
     }
 
@@ -468,7 +476,7 @@ public class GameManager {
         alive.clear();
         isGameMaster.clear();
         canSeeEveryone.clear();
-        HuntersThatCanRespawn.clear();
+        HuntersThatCantRespawn.clear();
         votedFor.clear();
         voteResults.clear();
         Roles.clear();
@@ -476,7 +484,9 @@ public class GameManager {
         poolMade = false;
         anyoneAtAllCanVote =false;
         anyoneAtAllCanAccuse = false;
-
+         wwVictim = "";
+         witchVictim = "";
+         hunterVictim = "";
     }
 
     //TODO spieler bei wiederbelebung wieder unsichtbar für andere Spieler
@@ -488,7 +498,18 @@ public class GameManager {
     public void setDead(String player){
         executeCommand("clear " + player,10);
         executeCommand("gamemode spectator " + player,20);
-        alive.remove(player);
+        for(String s : Roles.keySet()) {
+            if(Roles.get(s).equals("Hexe") && !isDay) {
+                executeCommand("give " + s + " minecraft:golden_apple{display:{Name:'{\"text\":\"Heiltrank\"}'}}", 0);
+            }
+        }
+        Bukkit.getPlayer(player).teleport(Bukkit.getPlayer(player).getWorld().getSpawnLocation());
+        if(Roles.get(player).equals("Jäger")){
+            HuntersThatCantRespawn.add(player);
+            setAlive(player);
+        }else {
+            alive.remove(player);
+        }
 
     }
     public void setFinalDeath(String player){
@@ -679,6 +700,12 @@ public class GameManager {
     public void setWwvoteResults(HashMap<String, ArrayList<String>> wwvoteResults) {
         this.wwvoteResults = wwvoteResults;
     }
+    public ArrayList<String> getHuntersThatCantRespawn() {
+        return HuntersThatCantRespawn;
+    }
 
+    public void setHuntersThatCantRespawn(ArrayList<String> huntersThatCantRespawn) {
+        HuntersThatCantRespawn = huntersThatCantRespawn;
+    }
 
 }
