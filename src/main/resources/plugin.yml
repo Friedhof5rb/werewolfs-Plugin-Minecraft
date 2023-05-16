@@ -1,0 +1,13 @@
+name: werewolfs
+version: '${project.version}'
+main: me.friedhof.werewolfs.Werewolfs
+api-version: 1.19
+commands:
+  gui:
+    description: Öffne das SpielleiterGui
+    usage: /gui
+    permission: Werewolfs.gui
+
+permissions:
+  Werewolfs.gui:
+    default: op
