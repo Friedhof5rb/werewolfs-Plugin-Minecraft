@@ -1,6 +1,5 @@
 package me.friedhof.werewolfs.Organization;
 
-import com.sun.tools.javac.code.Attribute;
 import me.friedhof.werewolfs.Werewolfs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,38 +19,42 @@ public class GameManager {
 
 
 
-    ArrayList<String> inGame = new ArrayList<String>();
-
-
-    ArrayList<String> alive = new ArrayList<String>();
-    ArrayList<String> isGameMaster = new ArrayList<String>();
-    ArrayList<String> canSeeEveryone = new ArrayList<String>();
-    ArrayList<String> HuntersThatCanRespawn = new ArrayList<String>();
-    HashMap<String,String> votedFor = new HashMap<String,String>();
-
-    HashMap<String,ArrayList<String>> voteResults = new HashMap<String, ArrayList<String>>();
-
-
-
-
-    HashMap<String,String> wwvotedFor = new HashMap<String,String>();
-
-    HashMap<String,ArrayList<String>> wwvoteResults = new HashMap<String, ArrayList<String>>();
-
-
-
-
-    HashMap<String,String> Roles = new HashMap<String,String>();
-
-    HashMap<String,String> accused = new HashMap<String,String>();
+    ArrayList<String> inGame = new ArrayList<>();
+    ArrayList<String> alive = new ArrayList<>();
+    ArrayList<String> isGameMaster = new ArrayList<>();
+    ArrayList<String> canSeeEveryone = new ArrayList<>();
+    ArrayList<String> HuntersThatCanRespawn = new ArrayList<>();
+    HashMap<String,String> votedFor = new HashMap<>();
+    HashMap<String,ArrayList<String>> voteResults = new HashMap<>();
+    HashMap<String,String> wwvotedFor = new HashMap<>();
+    HashMap<String,ArrayList<String>> wwvoteResults = new HashMap<>();
+    HashMap<String,String> Roles = new HashMap<>();
+    HashMap<String,String> accused = new HashMap<>();
 
     public boolean poolMade = false;
-
-
-
     public boolean anyoneAtAllCanVote = false;
     public boolean anyoneAtAllCanAccuse= false;
+    boolean isDay = true;
+    boolean isGameRunning = false;
 
+
+    Werewolfs plugin;
+    ConsoleCommandSender console;
+
+
+
+
+
+
+    //Rollen: dorfi, ww, jäger, hexe, seher
+    //TODO witch, hunter, seer, wws
+
+
+
+    public GameManager(Werewolfs plugin) {
+        this.plugin = plugin;
+        this.console = Bukkit.getServer().getConsoleSender();
+    }
 
     public boolean accusedContains(String name){
 
@@ -65,8 +68,6 @@ public class GameManager {
 
     }
 
-
-
     public void voteResult(){
 
         for(String s : votedFor.keySet()){
@@ -74,7 +75,7 @@ public class GameManager {
             String value = votedFor.get(s);
 
             if(value != null){
-                   voteResults.put(value,new ArrayList<String>());
+                voteResults.put(value,new ArrayList<String>());
             }
 
         }
@@ -102,7 +103,6 @@ public class GameManager {
             if(voteResults.get(s).size() == biggestNumber){
                 if(!once){
                     once = true;
-                    continue;
                 }else{
                     twice = true;
                     break;
@@ -145,7 +145,7 @@ public class GameManager {
             }
         }
 
-       int wwvotedcount = 0;
+        int wwvotedcount = 0;
         for(String s: wwvotedFor.keySet()){
             if(wwvotedFor.get(s) != null){
                 wwvotedcount++;
@@ -159,7 +159,7 @@ public class GameManager {
                 String value = wwvotedFor.get(s);
 
                 if(value != null){
-                    wwvoteResults.put(value,new ArrayList<String>());
+                    wwvoteResults.put(value,new ArrayList<>());
                 }
 
             }
@@ -198,7 +198,7 @@ public class GameManager {
             for(String s : votedFor.keySet()) {
                 for(String s2 : Roles.keySet()){
                     if(Roles.get(s2).equalsIgnoreCase("Werwolf")){
-                       Bukkit.getPlayer(s2).sendMessage(s + " hat für " + votedFor.get(s) + " gevotet.");
+                        Bukkit.getPlayer(s2).sendMessage(s + " hat für " + votedFor.get(s) + " gevotet.");
                     }
                 }
 
@@ -236,40 +236,10 @@ public class GameManager {
                         executeCommand("give "+ s2+ " minecraft:wooden_sword{display:{Name:'{\"text\":\"KillerSchwert\"}'}}",20);
                     }
                 }
-
             }
-
-
-
-
-
         }
-
-
-
-
-
     }
 
-
-
-    //Rollen: dorfi, ww, jäger, hexe, seher
-
-    //TODO voting at day and at night
-    //TODO witch, hunter, seer, wws
-
-
-    boolean isDay = true;
-
-
-
-    boolean isGameRunning = false;
-    Werewolfs plugin;
-    ConsoleCommandSender console;
-    public GameManager(Werewolfs plugin) {
-        this.plugin = plugin;
-        this.console = Bukkit.getServer().getConsoleSender();
-    }
 
     public void addToGame(String player){
         if(!inGame.contains(player)) {

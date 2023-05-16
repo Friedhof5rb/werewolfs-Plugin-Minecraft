@@ -34,7 +34,6 @@ public class MyListener implements Listener {
 
 
 
-    //TODO remove Items of Roles
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event){
         Player player = event.getPlayer();
@@ -960,7 +959,7 @@ public class MyListener implements Listener {
         return item;
     }
 
-    //TODO set to spectator and check for Hunter/ Total Death
+    //TODO check for Hunter/ Total Death
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event){
         Player player = event.getEntity();
