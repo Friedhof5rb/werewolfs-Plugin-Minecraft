@@ -347,7 +347,7 @@ public class GameManager {
         executeCommand("effect give @a glowing infinite 0 true",110);
 
         for(String s : inGame){
-            executeCommand(  "gamemode survival "+ s,120);
+            executeCommand(  "gamemode adventure "+ s,120);
         }
 
         executeCommand(  "say Game startet!",130);
@@ -497,7 +497,7 @@ public class GameManager {
         executeCommand("effect clear @a glowing",20);
         int delay = 30;
         for(String s : inGame){
-            executeCommand(  "gamemode survival "+ s,delay);
+            executeCommand(  "gamemode adventure "+ s,delay);
             delay += 10 ;
         }
         new BukkitRunnable(){
@@ -540,7 +540,7 @@ public class GameManager {
 
 
         executeCommand("clear " + player,10);
-        executeCommand("gamemode survival " + player,20);
+        executeCommand("gamemode adventure " + player,20);
         if(Roles.get(player).equals("Jäger")) {
             executeCommand("give " + player + " minecraft:crossbow{display:{Name:'{\"text\":\"Gewehr\"}'}}", 30);
         }
