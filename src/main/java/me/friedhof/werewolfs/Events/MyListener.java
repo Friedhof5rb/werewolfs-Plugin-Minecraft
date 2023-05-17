@@ -67,6 +67,7 @@ public class MyListener implements Listener {
 
    @EventHandler
     public void onPlayerInteractEvent(PlayerInteractEvent e) {
+       console =  Bukkit.getServer().getConsoleSender();
         if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Demokratie")) {
 
             if(!Werewolfs.getInstance().getGameManager().anyoneAtAllCanAccuse &&  !Werewolfs.getInstance().getGameManager().anyoneAtAllCanVote){
@@ -260,14 +261,6 @@ public class MyListener implements Listener {
            Inventory gui = Bukkit.createInventory(e.getPlayer(), 54, ChatColor.AQUA + "Zaubertrank");
 
 
-
-           ItemStack enthaltung = new ItemStack(Material.PAPER);
-
-           ItemMeta enthaltung_meta = enthaltung.getItemMeta();
-           enthaltung_meta.setDisplayName("Enthaltung");
-           enthaltung.setItemMeta(enthaltung_meta);
-
-           gui.addItem(enthaltung);
            for(String p : Werewolfs.getInstance().getGameManager().getInGame()  ){
                slot++;
                gui.addItem(getHead(Bukkit.getPlayer(p),false));
@@ -304,13 +297,7 @@ public class MyListener implements Listener {
 
 
 
-           ItemStack enthaltung = new ItemStack(Material.PAPER);
 
-           ItemMeta enthaltung_meta = enthaltung.getItemMeta();
-           enthaltung_meta.setDisplayName("Enthaltung");
-           enthaltung.setItemMeta(enthaltung_meta);
-
-           gui.addItem(enthaltung);
            for(String p : Werewolfs.getInstance().getGameManager().getInGame()  ){
                slot++;
                gui.addItem(getHead(Bukkit.getPlayer(p),false));
@@ -340,10 +327,41 @@ public class MyListener implements Listener {
            return;
 
        }
-        //TODO Heiltrank Logik
+
        if(e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("Heiltrank")) {
+           int slot = 0;
+           Inventory gui = Bukkit.createInventory(e.getPlayer(), 54, ChatColor.AQUA + "Heiltrank");
 
 
+           for(String p : Werewolfs.getInstance().getGameManager().getInGame()  ){
+               slot++;
+               if(!Werewolfs.getInstance().getGameManager().getAlive().contains(p)) {
+                   gui.addItem(getHead(Bukkit.getPlayer(p), false));
+               }
+           }
+
+           ItemStack nothing= new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+
+           ItemMeta nothing_meta = nothing.getItemMeta();
+           nothing_meta.setDisplayName(" ");
+           nothing.setItemMeta(nothing_meta);
+
+
+           if(slot>53){
+               e.getPlayer().sendMessage("Zu viele Spieler Online");
+               e.setCancelled(true);
+               return;
+           }
+
+
+
+           for(int i = 53; i > slot; i--) {
+               gui.setItem(i,nothing);
+           }
+
+           e.getPlayer().openInventory(gui);
+           e.setCancelled(true);
+           return;
        }
 
 
@@ -365,7 +383,7 @@ public class MyListener implements Listener {
     }
     @EventHandler
     public void clickEvent(InventoryClickEvent event){
-
+        console =  Bukkit.getServer().getConsoleSender();
 
 
         if(!event.isCancelled()) {
@@ -1097,6 +1115,101 @@ public class MyListener implements Listener {
 
         }
 
+        if(event.getView().getTitle().equalsIgnoreCase(ChatColor.AQUA + "Gewehr")) {
+            if(event.getCurrentItem() == null){
+                event.setCancelled(true);
+                return;
+            }
+            if(event.getCurrentItem().getType() == Material.LIGHT_GRAY_STAINED_GLASS_PANE) {
+                event.setCancelled(true);
+                return;
+            }
+            if(event.getCurrentItem().getType() == Material.PLAYER_HEAD) {
+
+                player.closeInventory();
+
+
+                Werewolfs.getInstance().getGameManager().hunterVictim.put(player.getDisplayName(),event.getCurrentItem().getItemMeta().getDisplayName());
+                executeCommand("clear " +player.getDisplayName() + " minecraft:crossbow" ,10);
+                executeCommand("give "+ player.getDisplayName()+ " minecraft:wooden_sword{display:{Name:'{\"text\":\"KillerSchwert\"}'}}",20);
+                for(String gm : Werewolfs.getInstance().getGameManager().getIsGameMaster()) {
+                    Player gmp = Bukkit.getPlayer(gm);
+                    gmp.sendMessage("Jäger-" + player.getDisplayName() + " kann jetzt " + event.getCurrentItem().getItemMeta().getDisplayName() + " töten.");
+                }
+                player.sendMessage("Du hast " + event.getCurrentItem().getItemMeta().getDisplayName() + " zum Todesopfer erwählt.");
+
+
+
+                event.setCancelled(true);
+                return;
+            }
+
+        }
+        if(event.getView().getTitle().equalsIgnoreCase(ChatColor.AQUA + "Zaubertrank")) {
+            if(event.getCurrentItem() == null){
+                event.setCancelled(true);
+                return;
+            }
+            if(event.getCurrentItem().getType() == Material.LIGHT_GRAY_STAINED_GLASS_PANE) {
+                event.setCancelled(true);
+                return;
+            }
+            if(event.getCurrentItem().getType() == Material.PLAYER_HEAD) {
+
+                player.closeInventory();
+
+
+                Werewolfs.getInstance().getGameManager().witchVictim.put(player.getDisplayName(),event.getCurrentItem().getItemMeta().getDisplayName());
+                executeCommand("clear " +player.getDisplayName() + " minecraft:splash_potion" ,10);
+                executeCommand("give "+ player.getDisplayName()+ " minecraft:wooden_sword{display:{Name:'{\"text\":\"KillerSchwert\"}'}}",20);
+                for(String gm : Werewolfs.getInstance().getGameManager().getIsGameMaster()) {
+                    Player gmp = Bukkit.getPlayer(gm);
+                    gmp.sendMessage("Hexe-" + player.getDisplayName() + " kann jetzt " + event.getCurrentItem().getItemMeta().getDisplayName() + " töten.");
+                }
+                player.sendMessage("Du hast " + event.getCurrentItem().getItemMeta().getDisplayName() + " zum Todesopfer erwählt.");
+
+
+
+                event.setCancelled(true);
+                return;
+            }
+
+        }
+        if(event.getView().getTitle().equalsIgnoreCase(ChatColor.AQUA + "Heiltrank")) {
+            if(event.getCurrentItem() == null){
+                event.setCancelled(true);
+                return;
+            }
+            if(event.getCurrentItem().getType() == Material.LIGHT_GRAY_STAINED_GLASS_PANE) {
+                event.setCancelled(true);
+                return;
+            }
+            if(event.getCurrentItem().getType() == Material.PLAYER_HEAD) {
+
+                player.closeInventory();
+
+
+              Werewolfs.getInstance().getGameManager().setAlive(event.getCurrentItem().getItemMeta().getDisplayName());
+              executeCommand("clear "+ player.getDisplayName() + " minecraft:golden_apple",10);
+                for(String gm : Werewolfs.getInstance().getGameManager().getIsGameMaster()) {
+                    Player gmp = Bukkit.getPlayer(gm);
+                    gmp.sendMessage("Hexe-" + player.getDisplayName() + " hat jetzt " + event.getCurrentItem().getItemMeta().getDisplayName() + "geheilt.");
+                }
+                player.sendMessage("Du hast " + event.getCurrentItem().getItemMeta().getDisplayName() + " geheilt.");
+
+
+
+
+
+                event.setCancelled(true);
+                return;
+            }
+
+        }
+
+
+
+
 
 
     }
@@ -1118,7 +1231,6 @@ public class MyListener implements Listener {
         return item;
     }
 
-    //TODO check for Hunter/ Total Death
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event){
         Player player = event.getEntity();
@@ -1129,7 +1241,7 @@ public class MyListener implements Listener {
             }
         }else{
 
-
+            Werewolfs.getInstance().getGameManager().setFinalDead(player.getDisplayName());
 
         }
 
@@ -1155,12 +1267,12 @@ public class MyListener implements Listener {
                 return;
             }
             if(Werewolfs.getInstance().getGameManager().getRoles().get(hasDamaged.getDisplayName()) == "Hexe" &&
-                    !wasDamaged.getDisplayName().equals(Werewolfs.getInstance().getGameManager().witchVictim)){
+                    !Werewolfs.getInstance().getGameManager().witchVictimContains(wasDamaged.getDisplayName())){
                 event.setCancelled(true);
                 return;
             }
             if(Werewolfs.getInstance().getGameManager().getRoles().get(hasDamaged.getDisplayName()) == "Jäger" &&
-                    !wasDamaged.getDisplayName().equals(Werewolfs.getInstance().getGameManager().hunterVictim)){
+                    !Werewolfs.getInstance().getGameManager().hunterVictimContains(wasDamaged.getDisplayName())){
                 event.setCancelled(true);
                 return;
             }

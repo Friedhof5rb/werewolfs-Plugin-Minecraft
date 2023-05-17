@@ -44,10 +44,14 @@ public class GameManager {
     Werewolfs plugin;
     ConsoleCommandSender console;
 
-    public String wwVictim = "";
-    public String witchVictim = "";
-    public String hunterVictim = "";
 
+    public String wwVictim = "";
+    public HashMap<String,String> hunterDayMessage = new HashMap<>();
+
+    public HashMap<String,String> witchVictim = new HashMap<>();
+    public HashMap<String,String> hunterVictim = new HashMap<>();
+
+    public String witchCanHeal = "";
 
 
 
@@ -72,6 +76,29 @@ public class GameManager {
 
 
     }
+
+    public boolean hunterVictimContains(String name){
+
+        for( String key : hunterVictim.keySet()){
+            if(hunterVictim.get(key).equals(name)){
+                return true;
+            }
+        }
+        return false;
+
+    }
+
+    public boolean witchVictimContains(String name){
+
+        for( String key : witchVictim.keySet()){
+            if(witchVictim.get(key).equals(name)){
+                return true;
+            }
+        }
+        return false;
+
+    }
+
 
     public void voteResult(){
 
@@ -130,9 +157,7 @@ public class GameManager {
 
 
         if(!twice){
-
-            //TODO killcode?
-            setDead(votedOut);
+            setFinalDead(votedOut);
             executeCommand("say " + votedOut + " ist raus.",delay);
         }
     }
@@ -311,20 +336,21 @@ public class GameManager {
         Bukkit.dispatchCommand(console, "say Lade...");
         skipNight();
         executeCommand("gamerule doImmediateRespawn true",20);
-        executeCommand("gamerule doDaylightCycle false",30);
-        executeCommand("difficulty peaceful",40);
-        executeCommand("gamerule fallDamage false",50);
-        executeCommand("gamerule fireDamage false",60);
-        executeCommand("gamerule fallDamage false",70);
-        executeCommand("gamerule drowningDamage false",80);
-        executeCommand("gamerule freezeDamage false",90);
-        executeCommand("effect give @a glowing infinite 0 true",100);
+        executeCommand("gamerule keepInventory true",30);
+        executeCommand("gamerule doDaylightCycle false",40);
+        executeCommand("difficulty peaceful",50);
+        executeCommand("gamerule fallDamage false",60);
+        executeCommand("gamerule fireDamage false",70);
+        executeCommand("gamerule fallDamage false",80);
+        executeCommand("gamerule drowningDamage false",90);
+        executeCommand("gamerule freezeDamage false",100);
+        executeCommand("effect give @a glowing infinite 0 true",110);
 
         for(String s : inGame){
-            executeCommand(  "gamemode survival "+ s,110);
+            executeCommand(  "gamemode survival "+ s,120);
         }
 
-        executeCommand(  "say Game startet!",120);
+        executeCommand(  "say Game startet!",130);
 
 
 
@@ -390,11 +416,6 @@ public class GameManager {
                         executeCommand("give "+ s+ " minecraft:ender_eye{display:{Name:'{\"text\":\"Kristallkugel\"}'}}",0);
 
                     }
-                    if(Roles.get(s).equals("Jäger")){
-                        //TODO give Crossbow only after death of hunter
-                        executeCommand("give "+ s+ " minecraft:crossbow{display:{Name:'{\"text\":\"Gewehr\"}'}}",0);
-
-                    }
                 }
 
             }
@@ -414,35 +435,47 @@ public class GameManager {
 
 
 
-    public void skipNight(){
+    public void skipNight() {
         isDay = true;
 
         int delay = 5;
-        for(String s : inGame){
-            executeCommand("clear " + s,delay);
+        for (String s : inGame) {
+            executeCommand("clear " + s, delay);
             delay += 5;
         }
 
-        new BukkitRunnable(){
+        new BukkitRunnable() {
             @Override
             public void run() {
-                for(Player p1 : Bukkit.getOnlinePlayers()){
+                for (Player p1 : Bukkit.getOnlinePlayers()) {
                     for (Player p2 : Bukkit.getOnlinePlayers()) {
-                        p1.showPlayer(plugin,p2);
+                        p1.showPlayer(plugin, p2);
                     }
                 }
-                if(isGameRunning) {
+                if (isGameRunning) {
                     giveDorfiItem();
                 }
             }
-        }.runTaskLater(Werewolfs.getInstance(),delay);
+        }.runTaskLater(Werewolfs.getInstance(), delay);
 
 
-        executeCommand("time set 6000",10);
+        executeCommand("time set 6000", 10);
         wwVictim = "";
-        witchVictim = "";
-        hunterVictim = "";
+        witchVictim = new HashMap<>();
+        hunterVictim = new HashMap<>();
         actualizeAliveList();
+
+        for (String s : hunterDayMessage.keySet()){
+            if(!hunterDayMessage.get(s).equals("")) {
+                executeCommand("say " + hunterDayMessage.get(s), 20);
+                hunterDayMessage.put(s, "");
+            }
+        }
+        for(String p : alive){
+           if(getHuntersThatCantRespawn().contains(p)){
+               setFinalDead(p);
+           }
+        }
     }
 
 
@@ -485,22 +518,44 @@ public class GameManager {
         anyoneAtAllCanVote =false;
         anyoneAtAllCanAccuse = false;
          wwVictim = "";
-         witchVictim = "";
-         hunterVictim = "";
+        witchVictim.clear();
+        hunterVictim.clear();
+        hunterDayMessage.clear();
+        for(Player p: Bukkit.getOnlinePlayers()) {
+            new AliveScoreboard(p,alive);
+        }
+
     }
 
-    //TODO spieler bei wiederbelebung wieder unsichtbar für andere Spieler
     public void setAlive(String player){
+        Bukkit.getPlayer(player).teleport(Bukkit.getPlayer(player).getWorld().getSpawnLocation());
+        for(Player p1 : Bukkit.getOnlinePlayers()){
+            if(!canSeeEveryone.contains(p1.getName()) && !isGameMaster.contains(p1.getName())) {
+                p1.hidePlayer(Bukkit.getPlayer(player));
+            }
+        }
+        if(!alive.contains(player)){
+            alive.add(player);
+        }
 
 
-
+        executeCommand("clear " + player,10);
+        executeCommand("gamemode survival " + player,20);
+        if(Roles.get(player).equals("Jäger")) {
+            executeCommand("give " + player + " minecraft:crossbow{display:{Name:'{\"text\":\"Gewehr\"}'}}", 30);
+        }
+        Bukkit.getPlayer(player).teleport(Bukkit.getPlayer(player).getWorld().getSpawnLocation());
     }
     public void setDead(String player){
         executeCommand("clear " + player,10);
         executeCommand("gamemode spectator " + player,20);
         for(String s : Roles.keySet()) {
             if(Roles.get(s).equals("Hexe") && !isDay) {
-                executeCommand("give " + s + " minecraft:golden_apple{display:{Name:'{\"text\":\"Heiltrank\"}'}}", 0);
+                if(!hunterVictimContains(player)) {
+                    Bukkit.getPlayer(s).sendMessage(player + " ist gestorben. Willst du die Person retten?");
+                    witchCanHeal = player;
+                    executeCommand("give " + s + " minecraft:golden_apple{display:{Name:'{\"text\":\"Heiltrank\"}'}}", 0);
+                }
             }
         }
         Bukkit.getPlayer(player).teleport(Bukkit.getPlayer(player).getWorld().getSpawnLocation());
@@ -512,7 +567,12 @@ public class GameManager {
         }
 
     }
-    public void setFinalDeath(String player){
+    public void setFinalDead(String player){
+        Bukkit.getPlayer(player).teleport(Bukkit.getPlayer(player).getWorld().getSpawnLocation());
+        executeCommand("clear " + player,10);
+        executeCommand("gamemode spectator " + player,20);
+        alive.remove(player);
+        hunterDayMessage.put(player,player + " war Jäger und hat " +  hunterVictim.get(player)+ " getötet.");
 
     }
 
