@@ -45,7 +45,7 @@ können ein Opfer voten, dieses ist dann sichtbar für alle Werwölfe umgekehrt 
 
 Die Werwölfe erhalten dann auch alle ein Schwert mit welchem sie nur den ausgewählten Spieler töten können, dieses kann nicht gedroppt werden und es verschwindet nach Benutzung von einem Werwolf bei allen Werwölfen
 
-Seherin/Nutte/Blinzelmädchen:
+Seherin:
 Kann eine Person auswählen , die Sie für den Rest der Nacht hört und sieht(umgekehrt aber nicht)
 
 
