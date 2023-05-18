@@ -361,11 +361,13 @@ public class GameManager {
     }
 
     public void changeTime(){
-        if(isDay){
-            skipDay();
+        if(isGameRunning) {
+            if (isDay) {
+                skipDay();
 
-        }else{
-            skipNight();
+            } else {
+                skipNight();
+            }
         }
     }
 
@@ -565,7 +567,7 @@ public class GameManager {
         executeCommand("gamemode spectator " + player,20);
         for(String s : Roles.keySet()) {
             if(Roles.get(s).equals("Hexe") && !isDay) {
-                if(!hunterVictimContains(player)) {
+                if(!hunterVictimContains(player) && !Roles.get(player).equals("jäger")) {
                     Bukkit.getPlayer(s).sendMessage(player + " ist gestorben. Willst du die Person retten?");
                     witchCanHeal = player;
                     executeCommand("give " + s + " minecraft:golden_apple{display:{Name:'{\"text\":\"Heiltrank\"}'}}", 0);
@@ -619,7 +621,7 @@ public class GameManager {
         ItemStack voteStart = new ItemStack(Material.WRITABLE_BOOK);
 
         ItemMeta voteStart_meta = voteStart.getItemMeta();
-        voteStart_meta.setDisplayName("Starte eine neue neue Abstimmung");
+        voteStart_meta.setDisplayName("Starte eine neue Abstimmung");
         voteStart.setItemMeta(voteStart_meta);
 
 
