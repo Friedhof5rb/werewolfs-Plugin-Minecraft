@@ -1099,7 +1099,7 @@ public class MyListener implements Listener {
 
                 player.closeInventory();
 
-                player.showPlayer(Bukkit.getPlayer(event.getCurrentItem().getItemMeta().getDisplayName()));
+                player.showPlayer(Werewolfs.getInstance(),Bukkit.getPlayer(event.getCurrentItem().getItemMeta().getDisplayName()));
                 for(String gm : Werewolfs.getInstance().getGameManager().getIsGameMaster()) {
                     Player gmp = Bukkit.getPlayer(gm);
                     gmp.sendMessage("Seher-" + player.getDisplayName() + " sieht jetzt " + event.getCurrentItem().getItemMeta().getDisplayName());
@@ -1132,6 +1132,7 @@ public class MyListener implements Listener {
                 Werewolfs.getInstance().getGameManager().hunterVictim.put(player.getDisplayName(),event.getCurrentItem().getItemMeta().getDisplayName());
                 executeCommand("clear " +player.getDisplayName() + " minecraft:crossbow" ,10);
                 executeCommand("give "+ player.getDisplayName()+ " minecraft:wooden_sword{display:{Name:'{\"text\":\"KillerSchwert\"}'}}",20);
+                player.showPlayer(Werewolfs.getInstance(),Bukkit.getPlayer(event.getCurrentItem().getItemMeta().getDisplayName()));
                 for(String gm : Werewolfs.getInstance().getGameManager().getIsGameMaster()) {
                     Player gmp = Bukkit.getPlayer(gm);
                     gmp.sendMessage("Jäger-" + player.getDisplayName() + " kann jetzt " + event.getCurrentItem().getItemMeta().getDisplayName() + " töten.");
@@ -1162,6 +1163,7 @@ public class MyListener implements Listener {
                 Werewolfs.getInstance().getGameManager().witchVictim.put(player.getDisplayName(),event.getCurrentItem().getItemMeta().getDisplayName());
                 executeCommand("clear " +player.getDisplayName() + " minecraft:splash_potion" ,10);
                 executeCommand("give "+ player.getDisplayName()+ " minecraft:wooden_sword{display:{Name:'{\"text\":\"KillerSchwert\"}'}}",20);
+                player.showPlayer(Werewolfs.getInstance(),Bukkit.getPlayer(event.getCurrentItem().getItemMeta().getDisplayName()));
                 for(String gm : Werewolfs.getInstance().getGameManager().getIsGameMaster()) {
                     Player gmp = Bukkit.getPlayer(gm);
                     gmp.sendMessage("Hexe-" + player.getDisplayName() + " kann jetzt " + event.getCurrentItem().getItemMeta().getDisplayName() + " töten.");

@@ -261,6 +261,7 @@ public class GameManager {
                     if(Roles.get(s2).equalsIgnoreCase("Werwolf")){
                         executeCommand("give "+ s2+ " minecraft:wooden_sword{display:{Name:'{\"text\":\"KillerSchwert\"}'}}",20);
                         Bukkit.getPlayer(s2).showPlayer(plugin, Bukkit.getPlayer(votedOut));
+                        Bukkit.getPlayer(s2).showPlayer(Werewolfs.getInstance(),Bukkit.getPlayer(votedOut));
                         wwVictim = votedOut;
                     }
                 }
@@ -500,6 +501,10 @@ public class GameManager {
             executeCommand(  "gamemode adventure "+ s,delay);
             delay += 10 ;
         }
+        for(String s : inGame){
+            executeCommand(  "clear "+ s,delay);
+            delay += 10 ;
+        }
         new BukkitRunnable(){
             @Override
             public void run() {
@@ -524,14 +529,23 @@ public class GameManager {
         for(Player p: Bukkit.getOnlinePlayers()) {
             new AliveScoreboard(p,alive);
         }
-
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player p1 : Bukkit.getOnlinePlayers()) {
+                    for (Player p2 : Bukkit.getOnlinePlayers()) {
+                        p1.showPlayer(plugin, p2);
+                    }
+                }
+            }
+        }.runTaskLater(Werewolfs.getInstance(), delay);
     }
 
     public void setAlive(String player){
         Bukkit.getPlayer(player).teleport(Bukkit.getPlayer(player).getWorld().getSpawnLocation());
         for(Player p1 : Bukkit.getOnlinePlayers()){
             if(!canSeeEveryone.contains(p1.getName()) && !isGameMaster.contains(p1.getName())) {
-                p1.hidePlayer(Bukkit.getPlayer(player));
+                p1.hidePlayer(plugin,Bukkit.getPlayer(player));
             }
         }
         if(!alive.contains(player)){
