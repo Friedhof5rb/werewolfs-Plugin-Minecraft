@@ -261,7 +261,7 @@ public class GameManager {
                     if(Roles.get(s2).equalsIgnoreCase("Werwolf")){
                         executeCommand("give "+ s2+ " minecraft:wooden_sword{display:{Name:'{\"text\":\"KillerSchwert\"}'}}",20);
                         Bukkit.getPlayer(s2).showPlayer(plugin, Bukkit.getPlayer(votedOut));
-                        Bukkit.getPlayer(s2).showPlayer(Werewolfs.getInstance(),Bukkit.getPlayer(votedOut));
+                        Bukkit.getPlayer(s2).showPlayer(plugin,Bukkit.getPlayer(votedOut));
                         wwVictim = votedOut;
                     }
                 }

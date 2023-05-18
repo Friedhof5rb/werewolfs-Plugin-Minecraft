@@ -1,3 +1,6 @@
+me\friedhof\werewolfs\Organization\GameManager$5.class
+me\friedhof\werewolfs\Werewolfs.class
+me\friedhof\werewolfs\Organization\GameManager$4.class
 me\friedhof\werewolfs\Organization\GameManager$3.class
 me\friedhof\werewolfs\Events\MyListener$1.class
 me\friedhof\werewolfs\Organization\ScoreboardBuilder.class
@@ -5,7 +8,5 @@ me\friedhof\werewolfs\Events\MyListener.class
 me\friedhof\werewolfs\Organization\AliveScoreboard.class
 me\friedhof\werewolfs\Organization\GameManager$1.class
 me\friedhof\werewolfs\commands\GUICommand.class
-me\friedhof\werewolfs\Werewolfs.class
 me\friedhof\werewolfs\Organization\GameManager$2.class
-me\friedhof\werewolfs\Organization\GameManager$4.class
 me\friedhof\werewolfs\Organization\GameManager.class
