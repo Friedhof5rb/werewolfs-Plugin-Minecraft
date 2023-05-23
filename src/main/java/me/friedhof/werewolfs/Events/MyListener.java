@@ -1259,6 +1259,10 @@ public class MyListener implements Listener {
             Player wasDamaged = (Player) event.getEntity();
             Player hasDamaged = (Player) event.getDamager();
 
+            if(hasDamaged.getInventory().getItemInMainHand().getItemMeta() == null){
+                event.setCancelled(true);
+                return;
+            }
             if(!hasDamaged.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals("KillerSchwert")){
                 event.setCancelled(true);
                 return;
